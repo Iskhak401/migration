@@ -1,0 +1,13 @@
+---
+# RDF4J connection settings
+rdf4j_url: "https://graphdb.{{ domain_root }}"
+rdf4j_username: "caden_{{ env }}"
+rdf4j_repository_name: "{{ company }}-kg"
+
+# RDF4J data & reference namespaces
+rdf4j_base_namespace: "https://www.{{ company }}.io/ontology/"
+rdf4j_base_data_namespace: "{{ rdf4j_base_namespace }}data/"
+rdf4j_reference_namespace: "{{ rdf4j_base_namespace }}reference/"
+rdf4j_reference_data_namespace: "{{ rdf4j_reference_namespace }}data/"
+rdf4j_schema_namespace: "https://schema.org/"
+rdf4j_owl_namespace: "http://www.w3.org/2002/07/owl#"

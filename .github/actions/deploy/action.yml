@@ -1,0 +1,94 @@
+name: 'Deploy to EKS'
+description: 'Runs deployment playbooks using Ansible'
+
+inputs:
+  intake:
+    description: 'Target intake microservice'
+    required: true
+  environment:
+    description: 'Target environment to deploy'
+    required: true
+  ansible_vault_password:
+    description: 'Ansible vault password to decrypt secrets'
+    required: true
+  dry_run:
+    description: 'Whenever to run Ansible on check mode'
+    default: false
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set Ansible configuration
+      shell: bash -leo pipefail {0}
+      run: |
+        set_env() { echo "$1" >> $GITHUB_ENV; }
+        echo "dry_run: ${{ inputs.dry_run }}"
+
+        if [ "${{ inputs.dry_run }}" == "true" ]; then
+          set_env "OPTS=--check"
+        else
+          set_env "OPTS="
+        fi
+      working-directory: ansible
+
+    - name: Install galaxy dependencies
+      shell: bash -leo pipefail {0}
+      working-directory: ansible
+      run: ansible-galaxy collection install -r requirements.yml
+
+    - name: Add ansible vault key
+      shell: bash -leo pipefail {0}
+      working-directory: ansible
+      run: echo "${{ inputs.ansible_vault_password }}" > vault.key
+
+    - name: Run ansible-lint
+      shell: bash -leo pipefail {0}
+      working-directory: ansible
+      if: ${{ inputs.dry_run }} == true
+      run: ansible-lint playbooks/stage.yml
+
+    - name: Update kubectl context and login to registry
+      shell: bash -leo pipefail {0}
+      working-directory: ansible
+      run: ansible-playbook
+           playbooks/${{ inputs.environment }}.yml
+           ${OPTS}
+           -t kubeconfig,registry-login
+           -e intake="${{ inputs.intake }}"
+
+    - name: Update env-vars before container image build
+      shell: bash -leo pipefail {0}
+      working-directory: ansible
+      run: ansible-playbook
+           playbooks/${{ inputs.environment }}.yml
+           ${OPTS}
+           -t env-vars
+           -e intake="${{ inputs.intake }}"
+
+    - name: Build container image using docker
+      shell: bash -leo pipefail {0}
+      working-directory: ansible
+      run: ansible-playbook
+           playbooks/${{ inputs.environment }}.yml
+           ${OPTS}
+           -t build
+           -e intake="${{ inputs.intake }}"
+
+    - name: Push container image to GCR
+      shell: bash -leo pipefail {0}
+      working-directory: ansible
+      run: ansible-playbook
+           playbooks/${{ inputs.environment }}.yml
+           ${OPTS}
+           -t push
+           -e intake="${{ inputs.intake }}"
+
+    - name: Deploying to ${{ inputs.environment }} environment
+      shell: bash -leo pipefail {0}
+      working-directory: ansible
+      run: ansible-playbook
+           playbooks/${{ inputs.environment }}.yml
+           ${OPTS}
+           -t web-server
+           -e intake="${{ inputs.intake }}"

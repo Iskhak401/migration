@@ -1,0 +1,6 @@
+---
+# Environment variables values
+env: dev
+
+# AWS S3
+aws_access_key_id: "AKIARJSWIPK4MNCYMR4G"

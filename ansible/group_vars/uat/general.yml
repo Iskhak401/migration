@@ -1,0 +1,6 @@
+---
+# Environment variables values
+env: uat
+
+# AWS
+aws_access_key_id: "AKIARJSWIPK4IYO6DBST"

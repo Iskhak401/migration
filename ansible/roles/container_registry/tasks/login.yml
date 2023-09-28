@@ -1,0 +1,11 @@
+---
+- name: Log into the container registry
+  delegate_to: localhost
+  changed_when: true
+  ansible.builtin.shell:
+    cmd:
+      aws --region {{ container_registry.region }}
+      ecr get-login-password
+      | docker login
+        --username AWS
+        --password-stdin {{ container_registry.server }}

@@ -1,0 +1,20 @@
+---
+- name: Get cluster information
+  kubernetes.core.k8s_cluster_info:
+    context: "{{ ansible_kubectl_context }}"
+  register: cluster_info
+
+- name: Display output
+  ansible.builtin.debug:
+    msg: "{{ cluster_info }}"
+
+- name: Get worker node information
+  kubernetes.core.k8s_info:
+    kind: Node
+    context: "{{ ansible_kubectl_context }}"
+    namespace: default
+  register: node_info
+
+- name: Display output
+  ansible.builtin.debug:
+    msg: "{{ node_info }}"

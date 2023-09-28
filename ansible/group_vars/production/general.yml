@@ -1,0 +1,16 @@
+---
+# Environment variables values
+env: production
+
+# Server error
+server_error_include_message: "never"
+
+# Domain
+domain_root: "caden.io"
+domain: "{{ project }}.{{ domain_root }}"
+
+# AWS S3
+aws_access_key_id: "AKIARJSWIPK4FQU5HI4J"
+
+# Posgres
+database_maximum_pool_size: 50

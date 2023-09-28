@@ -1,0 +1,6 @@
+---
+- name: Push the container image
+  ansible.builtin.shell: "docker push {{ container_repository }}:{{ item }}"
+  loop:
+    - "{{ env }}"
+    - "{{ git_commit_sha }}"

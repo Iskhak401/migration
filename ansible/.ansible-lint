@@ -1,0 +1,6 @@
+skip_list:
+  - command-instead-of-shell
+  - ignore-errors
+  - no-changed-when
+  - package-latest
+  - var-naming

@@ -1,0 +1,16 @@
+---
+# Base SQS URL
+aws_sqs_base_url: "https://sqs.{{ aws_region }}.amazonaws.com/{{ aws_account_id }}/{{ company }}"
+aws_sqs_transformations_suffix: "transformations-{{ env }}.fifo"
+
+# Transformation queues
+sqs_transformation_queues:
+  megraph: "{{ aws_sqs_base_url }}-megraph-{{ aws_sqs_transformations_suffix }}"
+  spotify: "{{ aws_sqs_base_url }}-spotify-{{ aws_sqs_transformations_suffix }}"
+  netflix: "{{ aws_sqs_base_url }}-netflix-{{ aws_sqs_transformations_suffix }}"
+  ahk: "{{ aws_sqs_base_url }}-ahk-{{ aws_sqs_transformations_suffix }}"
+  amazon: "{{ aws_sqs_base_url }}-amazon-{{ aws_sqs_transformations_suffix }}"
+  airbnb: "{{ aws_sqs_base_url }}-airbnb-{{ aws_sqs_transformations_suffix }}"
+  uber: "{{ aws_sqs_base_url }}-uber-{{ aws_sqs_transformations_suffix }}"
+  mx: "{{ aws_sqs_base_url }}-mx-{{ aws_sqs_transformations_suffix }}"
+  location: "{{ aws_sqs_base_url }}-location-{{ aws_sqs_transformations_suffix }}"

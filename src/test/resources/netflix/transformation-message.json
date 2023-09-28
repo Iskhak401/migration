@@ -1,0 +1,8 @@
+{
+  "path": "path",
+  "accessKeyId": "accessKeyId",
+  "secretAccessKey": "secretAccessKey",
+  "sessionToken": "sessionToken",
+  "databaseEncryptionKey": "databaseEncryptionKey",
+  "cadenAlias": "1c49dec0-a01f-4151-a235-e102f06b538e"
+}

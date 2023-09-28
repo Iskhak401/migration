@@ -1,0 +1,49 @@
+name: tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+env:
+  JAVA_VERSION: "11"
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - name: Checkout current code's revision
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: "${{ env.JAVA_VERSION }}"
+          distribution: "adopt"
+          server-id: github
+          settings-path: ${{ github.workspace }}
+
+      - name: Register mvn cache to CI cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Run maven clean, compile and checkstyle
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        run: mvn clean compile checkstyle:checkstyle
+             -f poms/releases.pom.xml
+             -s ./settings.xml
+             --quiet

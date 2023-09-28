@@ -1,0 +1,12 @@
+---
+- name: Build the container image
+  ansible.builtin.shell: >
+    docker build
+    --no-cache
+    --file Dockerfile
+    --build-arg GITHUB_TOKEN='{{ vault_github_token }}'
+    --build-arg INTAKE='{{ intake }}'
+    --tag {{ container_repository }}:{{ env }}
+    --tag {{ container_repository }}:{{ git_commit_sha }} .
+  args:
+    chdir: "../.."

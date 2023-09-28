@@ -1,0 +1,128 @@
+---
+- name: Deploy web-server
+  block:
+    - name: Ensure web-server Deployment object is present
+      kubernetes.core.k8s:
+        state: present
+        context: "{{ ansible_kubectl_context }}"
+        namespace: default
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: "{{ project }}"
+            labels:
+              app.caden.io/name: "{{ project }}"
+              app.caden.io/service: "{{ project }}"
+              app.caden.io/managed-by: "ansible"
+              tags.datadoghq.com/env: "{{ env }}"
+              tags.datadoghq.com/service: "{{ project }}"
+              tags.datadoghq.com/version: "{{ k8s_objects.app_version }}"
+              app: "{{ project }}"
+          spec:
+            revisionHistoryLimit: 1
+            replicas: "{{ k8s_web_server_replicas }}"
+            selector:
+              matchLabels:
+                app: "{{ project }}"
+            template:
+              metadata:
+                annotations:
+                  admission.datadoghq.com/java-lib.version: "{{ k8s_objects.datadog_java_lib_version }}"
+                  git_commit_sha: "{{ git_commit_sha }}"
+                labels:
+                  app.caden.io/name: "{{ project }}"
+                  app.caden.io/service: "{{ project }}"
+                  app.caden.io/managed-by: "ansible"
+                  tags.datadoghq.com/env: "{{ env }}"
+                  tags.datadoghq.com/service: "{{ project }}"
+                  tags.datadoghq.com/version: "{{ k8s_objects.app_version }}"
+                  admission.datadoghq.com/enabled: "true"
+                  admission.datadoghq.com/config.mode: "socket"
+                  app: "{{ project }}"
+              spec:
+                containers:
+                  - name: "{{ project }}"
+                    image: "{{ container_image }}"
+                    imagePullPolicy: Always
+                    livenessProbe:
+                      httpGet:
+                        port: "{{ k8s_application_port }}"
+                        path: /actuator/health
+                        httpHeaders:
+                          - name: Host
+                            value: "{{ domain }}"
+                      initialDelaySeconds: 20
+                      periodSeconds: 10
+                      timeoutSeconds: 20
+                      failureThreshold: 5
+                    readinessProbe:
+                      httpGet:
+                        port: "{{ k8s_application_port }}"
+                        path: /actuator/health
+                        httpHeaders:
+                          - name: Host
+                            value: "{{ domain }}"
+                      initialDelaySeconds: 10
+                      periodSeconds: 10
+                      timeoutSeconds: 20
+                      failureThreshold: 5
+                    startupProbe:
+                      httpGet:
+                        port: "{{ k8s_application_port }}"
+                        path: /actuator/health
+                      initialDelaySeconds: 30
+                      failureThreshold: 10
+                      timeoutSeconds: 10
+                      periodSeconds: 10
+                    envFrom:
+                      - configMapRef:
+                          name: "{{ k8s_objects.configmap }}"
+                      - secretRef:
+                          name: "{{ k8s_objects.secret }}"
+                    env:
+                      - name: DD_ENV
+                        valueFrom:
+                          fieldRef:
+                            fieldPath: metadata.labels['tags.datadoghq.com/env']
+                      - name: DD_SERVICE
+                        valueFrom:
+                          fieldRef:
+                            fieldPath: metadata.labels['tags.datadoghq.com/service']
+                      - name: DD_VERSION
+                        valueFrom:
+                          fieldRef:
+                            fieldPath: metadata.labels['tags.datadoghq.com/version']
+                imagePullSecrets:
+                  - name: "ecr-{{ project }}"
+        wait: true
+
+    - name: Wait for Deployment to complete
+      changed_when: true
+      ansible.builtin.command:
+        cmd: >
+          kubectl rollout status deployment {{ item }} --watch=true --timeout=360s
+      loop:
+        - "{{ project }}"
+      environment:
+        K8S_AUTH_CONTEXT: "{{ ansible_kubectl_context }}"
+
+  rescue:
+    - name: Get error logs from failed deployment
+      kubernetes.core.k8s_log:
+        context: "{{ ansible_kubectl_context }}"
+        namespace: default
+        label_selectors:
+          - "app={{ project }}"
+          - "status.phase!=Running"
+      register: pod_error_log
+
+    - name: Print Pod error logs to output
+      ansible.builtin.debug:
+        msg: "{{ pod_error_log }}"
+      when: pod_error_log is defined
+
+    - name: Fail task
+      ansible.builtin.fail:
+        msg: "The deployment failed, please review error log from above"
+      when: pod_error_log is defined

@@ -1,0 +1,91 @@
+---
+environment_variables_configs:
+  # Application port
+  PORT: "{{ k8s_application_port | string }}"
+
+  # Server error
+  SERVER_ERROR_INCLUDE_MESSAGE: "{{ server_error_include_message }}"
+
+  # Logging level
+  BATCH_LOGGING_LEVEL: "{{ batch_logging_level }}"
+
+  # Database connectivity
+  DATABASE_NAME: "{{ database_name }}"
+  DATABASE_USERNAME: "{{ database_user }}"
+  DATABASE_HOST: "{{ database_host }}"
+  DATABASE_PORT: "{{ database_port | string }}"
+  DATABASE_CONNECTION: "{{ database_connection }}"
+  DATABASE_MAXIMUM_POOL_SIZE: "{{ database_maximum_pool_size | string }}"
+
+  # Datadog APM/Log integration
+  DD_LOGS_INJECTION: "true"
+  DD_PROFILING_ENABLED: "true"
+  DD_PROFILING_DDPROF_ENABLED: "true"
+  DD_PROFILING_DDPROF_CPU_ENABLED: "true"
+  DD_PROFILING_DDPROF_ALLOC_ENABLED: "true"
+  DD_PROFILING_DDPROF_CSTACK: "dwarf"
+
+  # AWS credentials
+  AWS_ACCESS_KEY_ID: "{{ aws_access_key_id }}"
+
+  # AWS S3
+  AWS_S3_REGION: "{{ aws_s3_region }}"
+  AWS_BUCKET_NAME: "{{ aws_s3_bucket_name }}"
+
+  # AWS SQS
+  AWS_SQS_REGION: "{{ aws_region }}"
+  AWS_MEGRAPH_TRANSFORMATIONS_QUEUE_URL: "{{ sqs_transformation_queues.megraph }}"
+  AWS_SPOTIFY_TRANSFORMATIONS_QUEUE_URL: "{{ sqs_transformation_queues.spotify }}"
+  AWS_AMAZON_TRANSFORMATIONS_QUEUE_URL: "{{ sqs_transformation_queues.amazon }}"
+  AWS_AIRBNB_TRANSFORMATIONS_QUEUE_URL: "{{ sqs_transformation_queues.airbnb }}"
+  AWS_NETFLIX_TRANSFORMATIONS_QUEUE_URL: "{{ sqs_transformation_queues.netflix }}"
+  AWS_UBER_TRANSFORMATIONS_QUEUE_URL: "{{ sqs_transformation_queues.uber }}"
+  AWS_MX_TRANSFORMATIONS_QUEUE_URL: "{{ sqs_transformation_queues.mx }}"
+  AWS_AHK_TRANSFORMATIONS_QUEUE_URL: "{{ sqs_transformation_queues.ahk }}"
+  AWS_LOCATION_TRANSFORMATIONS_QUEUE_URL: "{{ sqs_transformation_queues.location }}"
+
+  # Amazon
+  AMAZON_URL: "{{ amazon_url }}"
+
+  # Rainforest
+  RAINFOREST_API_URL: "{{ rainforest_api_url }}"
+
+  # Airbnb
+  AIRBNB_URL: "{{ airbnb_url }}"
+
+  # Netflix
+  NETFLIX_URL: "{{ netflix_url }}"
+
+  # Sentry
+  SENTRY_TRACES_SAMPLE_RATE: "{{ sentry_traces_sample_rate }}"
+  SENTRY_LOGGING_MINIMUM_EVENT_LEVEL: "{{ sentry_logging_minimum_event_level }}"
+  SENTRY_LOGGING_MINIMUM_BREADCRUMB_LEVEL: "{{ sentry_logging_minimum_breadcrumb_level }}"
+  SENTRY_ENVIRONMENT: "{{ env }}"
+  SENTRY_IGNORED_EXCEPTIONS_FOR_TYPE: "{{ sentry_ignored_exceptions_for_type }}"
+
+  # RDF4J
+  RDF4J_URL: "{{ rdf4j_url }}"
+  RDF4J_USERNAME: "{{ rdf4j_username }}"
+  RDF4J_REPOSITORY_NAME: "{{ rdf4j_repository_name }}"
+  RDF4J_CADEN_BASE_NAMESPACE: "{{ rdf4j_base_namespace }}"
+  RDF4J_CADEN_BASE_DATA_NAMESPACE: "{{ rdf4j_base_data_namespace }}"
+  RDF4J_CADEN_REFERENCE_NAMESPACE: "{{ rdf4j_reference_namespace }}"
+  RDF4J_CADEN_REFERENCE_DATA_NAMESPACE: "{{ rdf4j_reference_data_namespace }}"
+  RDF4J_SCHEMA_NAMESPACE: "{{ rdf4j_schema_namespace }}"
+  RDF4J_OWL_NAMESPACE: "{{ rdf4j_owl_namespace }}"
+
+environment_variables_secrets:
+  # Database password
+  DATABASE_PASSWORD: "{{ vault_database_password }}"
+
+  # AWS credentials
+  AWS_SECRET_ACCESS_KEY: "{{ vault_aws_secret_access_key }}"
+
+  # Sentry
+  SENTRY_DSN: "{{ vault_sentry_dsn }}"
+
+  # RDF4J
+  RDF4J_PASSWORD: "{{ vault_rdf4j_password }}"
+
+  # Rainforest
+  RAINFOREST_API_KEY: "{{ vault_rainforest_api_key }}"

@@ -1,0 +1,30 @@
+---
+# Default kubectl context
+ansible_kubectl_context: >-
+  arn:aws:eks:{{ aws_region }}:{{ aws_account_id }}:cluster/{{ k8s_cluster_name }}
+
+# Version control commit SHA-1
+git_commit_sha: "{{ lookup('pipe', 'git rev-parse --verify HEAD 2> /dev/null') }}"
+
+# Container registry
+container_registry:
+  region: "{{ aws_region }}"
+  server: "{{ aws_account_id }}.dkr.ecr.{{ aws_region }}.amazonaws.com"
+  access_id: "{{ vault_container_registry_access_id }}"
+  secret_key: "{{ vault_container_registry_secret_key }}"
+
+container_repository: "{{ container_registry.server }}/{{ env }}/{{ project }}"
+container_image: "{{ container_repository }}:{{ env }}"
+
+# Kubernetes cluster properties & resources
+k8s_cluster_name: "{{ company }}-{{ env }}"
+k8s_application_port: 8000
+k8s_web_server_replicas: 2
+
+k8s_objects:
+  app_version: "0.0.0"
+  configmap: "{{ project }}-configmap"
+  datadog_java_lib_version: "v1.13.0"
+  secret: "{{ project }}-secret"
+  ingress: "{{ project }}-ingress"
+  ingress_secret: "{{ project }}-ingress-tls"

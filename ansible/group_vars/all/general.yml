@@ -1,0 +1,35 @@
+---
+# Organization
+company: caden
+root_project: transformers
+intake: ""
+project: "{{ root_project }}-{{ intake }}"
+
+# Domain
+domain_root: "{{ env }}.caden.ninja"
+domain: "{{ project }}.{{ domain_root }}"
+
+# Logging error levels
+server_error_include_message: "always"
+batch_logging_level: "error"
+
+# PostgreSQL database
+database_name: "{{ company }}_{{ root_project }}"
+database_host: "{{ company }}-{{ root_project }}-{{ env }}.cccfh7v7ytbw.{{ aws_region }}.rds.amazonaws.com"
+database_user: "{{ company }}"
+database_port: 5432
+database_connection: postgresql
+database_maximum_pool_size: 12
+
+# AWS
+aws_account_id: "089301482168"
+aws_region: "us-east-1"
+
+# AWS S3
+aws_s3_region: "{{ aws_region }}"
+aws_s3_bucket_name: "{{ company }}-vault-{{ env }}"
+
+# Application data sources base URLs
+airbnb_url: "https://www.airbnb.com"
+amazon_url: "https://www.amazon.com"
+netflix_url: "https://www.netflix.com"

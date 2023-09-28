@@ -1,0 +1,19 @@
+---
+- name: Ensure web-server Service object is present
+  kubernetes.core.k8s:
+    state: present
+    context: "{{ ansible_kubectl_context }}"
+    namespace: default
+    definition:
+      kind: Service
+      apiVersion: v1
+      metadata:
+        name: "{{ project }}"
+      spec:
+        ports:
+          - port: "{{ k8s_application_port }}"
+            targetPort: "{{ k8s_application_port }}"
+            protocol: TCP
+        selector:
+          app: "{{ project }}"
+    wait: true

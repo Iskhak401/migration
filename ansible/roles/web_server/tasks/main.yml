@@ -1,0 +1,10 @@
+---
+- import_tasks: deployment.yml
+  tags:
+    - web-server
+    - deployment
+
+- import_tasks: service.yml
+  tags:
+    - web-server
+    - service

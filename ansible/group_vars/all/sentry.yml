@@ -1,0 +1,6 @@
+---
+# Sentry
+sentry_traces_sample_rate: "0.2"
+sentry_logging_minimum_event_level: "error"
+sentry_logging_minimum_breadcrumb_level: "debug"
+sentry_ignored_exceptions_for_type: "java.lang.Exception"

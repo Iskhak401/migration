@@ -1,0 +1,9 @@
+---
+- import_tasks: login.yml
+  tags:
+    - registry-login
+
+- import_tasks: secret.yml
+  tags:
+    - registry-login
+    - registry-login-secret

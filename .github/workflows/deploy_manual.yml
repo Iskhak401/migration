@@ -1,0 +1,37 @@
+name: deploy_manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch, tag, or SHA commit to deploy'
+        required: true
+        default: 'main'
+      environment:
+        description: 'Target environment for deployment'
+        required: true
+        default: 'dev'
+
+env:
+  ANSIBLE_FORCE_COLOR: '1'
+  PY_COLORS: '1'
+
+jobs:
+  deploy:
+    runs-on:
+      - self-hosted
+      - ansible
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - name: Checkout current pull-request revision code
+        uses: actions/checkout@v3
+        with:
+          ref: "${{ github.event.inputs.ref }}"
+
+      - name: Run deployment tasks
+        uses: ./.github/actions/deploy
+        with:
+          environment: "${{ github.event.inputs.environment }}"
+          ansible_vault_password: "${{ secrets.ANSIBLE_VAULT_PASSWORD }}"

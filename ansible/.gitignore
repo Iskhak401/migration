@@ -1,0 +1,9 @@
+# -- gitignore file -- #
+
+*.log
+*.txt
+
+collections/
+facts_cache/
+tmp/
+vault.key

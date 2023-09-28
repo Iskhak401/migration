@@ -1,0 +1,8 @@
+---
+- import_tasks: build.yml
+  tags:
+    - build
+
+- import_tasks: push.yml
+  tags:
+    - push

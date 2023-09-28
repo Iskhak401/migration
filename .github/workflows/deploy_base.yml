@@ -1,0 +1,37 @@
+name: deploy_base
+
+on:
+  workflow_call:
+    inputs:
+      intake:
+        required: true
+        type: string
+    secrets:
+      ansible_vault_password:
+        required: true
+
+env:
+  ANSIBLE_FORCE_COLOR: '1'
+  PY_COLORS: '1'
+
+jobs:
+  deploy:
+    runs-on:
+      - self-hosted
+      - ansible
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - name: Checkout current pull-request revision code
+        uses: actions/checkout@v3
+
+      - name: Set environment variables
+        uses: ./.github/actions/set-env
+
+      - name: Run deployment tasks
+        uses: ./.github/actions/deploy
+        with:
+          intake: ${{ inputs.intake }}
+          environment: "${{ env.ENVIRONMENT }}"
+          ansible_vault_password: "${{ secrets.ANSIBLE_VAULT_PASSWORD }}"

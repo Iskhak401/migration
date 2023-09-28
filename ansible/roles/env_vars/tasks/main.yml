@@ -1,0 +1,10 @@
+---
+- import_tasks: configmap.yml
+  tags:
+    - configmap
+    - env-vars
+
+- import_tasks: secret.yml
+  tags:
+    - env-vars
+    - secrets
